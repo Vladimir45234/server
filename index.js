@@ -1,5 +1,6 @@
+require('dotenv').config();
 const express = require('express');
-const http = require('http');
+const https = require('https');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -14,22 +15,22 @@ const sessionMiddleware = require('./config/session');
 const path = require('path');
 
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: 'https://izmerenie.netlify.app/',
     methods: ['GET', 'POST'],
     credentials: true
   }
 });
 
-const port = 5000;
+const PORT = process.env.PORT || 5000;
 const userSockets = new Map();
 const disconnectTimeouts = new Map(); 
 
 const messageRoutes = require('./routes/messageRoutes')(io);
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: 'https://izmerenie.netlify.app/', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(sessionMiddleware);
@@ -54,6 +55,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Socket.IO
 require('./socket')(io, userSockets, disconnectTimeouts);
 
-server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

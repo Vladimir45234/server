@@ -22,7 +22,7 @@ const registerUser = async (req, res) => {
 
     // Проверка существования пользователя
     const result = await pool.query(
-      'SELECT id FROM users WHERE username = $1 OR key = $2',
+      'SELECT id FROM users WHERE username = $1 OR user_key = $2',
       [username, hashedKey]
     );
 
@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
 
     // Сохраняем пользователя и получаем id
     const insertResult = await pool.query(
-      'INSERT INTO users (key, username, avatar) VALUES ($1, $2, $3) RETURNING id',
+        'INSERT INTO users (user_key, username, avatar) VALUES ($1, $2, $3) RETURNING id',
       [hashedKey, username, null]
     );
 
@@ -85,7 +85,7 @@ const loginUser = async (req, res) => {
 
     const pool = await getDbConnection();
     const result = await pool.query(
-      'SELECT id, username, avatar FROM users WHERE key = $1',
+      'SELECT id, username, avatar FROM users WHERE user_key = $1',
       [hashedKey]
     );
 
